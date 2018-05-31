@@ -6,7 +6,14 @@ $.getJSON("data/station_share_count.json", function (data) {
 
 var timeSharCount,usertypeCount
 $.getJSON("data/time_share_count.json", function (data) {
-  timeSharCount = data
+  timeSharCount = data.sort(function(a,b) {
+    if (a.startHour < b.startHour)
+      return -1;
+    else if (a.startHour > b.startHour)
+      return 1;
+    else
+      return 0
+  }).map(x => x.count)
 });
 
 $.getJSON("data/usertype_count.json", function (data) {
@@ -208,7 +215,7 @@ function map(stationInfo, geoCoordMap) {
 
   myChart.on('click', function (params) {
     if (params.seriesType === 'effectScatter') {
-      barChart([121, 355, 635, 324, 114, 38, 23, 41, 30, 71, 97, 292, 277, 177, 70, 26]);
+      barChart(timeSharCount);
       pieChart(usertypeCount)
       $('#detailModal').modal('show')
     }
