@@ -3,7 +3,18 @@ case class Trip(
   endTime: Long,
   startStationId: Int,
   endStationId: Int,
-  bikeId: Int)
+  bikeId: Int) {
+  def startHour = {
+    val calendar = java.util.Calendar.getInstance
+    calendar.setTimeInMillis(startTime)
+    calendar.get(java.util.Calendar.HOUR_OF_DAY)
+  }
+  def endHour = {
+    val calendar = java.util.Calendar.getInstance
+    calendar.setTimeInMillis(endTime)
+    calendar.get(java.util.Calendar.HOUR_OF_DAY)
+  }
+}
 
 object Trip {
   def parse(row: org.apache.spark.sql.Row) = {
