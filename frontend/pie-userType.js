@@ -18,14 +18,14 @@ function pieChart(data) {
             radius: '55%',
             center: ['50%', '60%'],
             data: [{
-                    value: _.find(usertypeCount, function(o) { return o.userType === "Subscriber"; }).count,
+                    value: data.Subscriber,
                     name: 'Subscriber',
                     itemStyle: {
                         color: '#064366'
                     }
                 },
                 {
-                    value: _.find(usertypeCount, function(o) { return o.userType === "Customer"; }).count,
+                    value: data.Customer,
                     name: 'Customer',
                     itemStyle: {
                         color: '#5FADBE'

@@ -1,0 +1,14 @@
+{
+	"San Francisco Caltrain Station 2  (Townsend St at 4th St)": {
+		"userTypeCount": {
+			"Subscriber": 1462,
+			"Customer": 848
+		}
+    },
+    "San Francisco Caltrain (Townsend St at 4th St)": {
+		"userTypeCount": {
+			"Subscriber": 1462,
+			"Customer": 848
+		}
+    } 
+}

@@ -1,45 +1,19 @@
-$.getJSON("data/station_share_count.json", function (data) {
-  $.getJSON("data/geoCoordmap.json", function (geoCoordMap) {
-    map(data, geoCoordMap)
-  });
+$.getJSON("data/stations.json", function (stationInfo) {
+  map(stationInfo);
 });
 
-var timeSharCount,usertypeCount
-$.getJSON("data/time_share_count.json", function (data) {
-  timeSharCount = data.sort(function(a,b) {
-    if (a.startHour < b.startHour)
-      return -1;
-    else if (a.startHour > b.startHour)
-      return 1;
-    else
-      return 0
-  }).map(x => x.count)
+var detailInfoData;
+$.getJSON("data/userType.json", function (data) {
+  detailInfoData = data;
 });
 
-$.getJSON("data/usertype_count.json", function (data) {
-  usertypeCount = data
-});
-
-function map(stationInfo, geoCoordMap) {
+function map(stationInfo) {
   var dom = document.getElementById("container");
   var myChart = echarts.init(dom);
   var app = {};
-  option = null;
-  var convertData = function (data) {
-    var res = [];
-    for (var i = 0; i < data.length; i++) {
-      var geoCoord = geoCoordMap[data[i].name];
-      if (geoCoord) {
-        res.push({
-          name: data[i].name,
-          value: geoCoord.concat(data[i].value)
-        });
-      }
-    }
-    return res;
-  };
+  //  option = null;
 
-  option = {
+  var option = {
     title: {
       text: 'Bay Area Bike Share Data',
       left: 'center'
@@ -48,8 +22,8 @@ function map(stationInfo, geoCoordMap) {
       trigger: 'item'
     },
     bmap: {
-      center: [-122.3942, 37.79539],
-      zoom: 14,
+      center: [-122.34, 37.81],
+      zoom: 13,
       roam: true,
       mapStyle: {
         styleJson: [{
@@ -156,9 +130,11 @@ function map(stationInfo, geoCoordMap) {
         name: 'count',
         type: 'scatter',
         coordinateSystem: 'bmap',
-        data: convertData(stationInfo),
+        data: stationInfo.sort(function (a, b) {
+          return a.value[2] - b.value[2];
+        }).slice(5),
         symbolSize: function (val) {
-          return val[2] / 1000;
+          return 2500.0 / val[2];
         },
         label: {
           normal: {
@@ -170,9 +146,14 @@ function map(stationInfo, geoCoordMap) {
             show: true
           }
         },
+        tooltip: {
+          formatter: function (params) {
+            return params.name + ": " + params.value[2];
+          }
+        },
         itemStyle: {
           normal: {
-            color: '#FFC133'
+            color: '#FF9033'
           }
         }
       },
@@ -180,11 +161,11 @@ function map(stationInfo, geoCoordMap) {
         name: 'Top 5',
         type: 'effectScatter',
         coordinateSystem: 'bmap',
-        data: convertData(stationInfo.sort(function (a, b) {
-          return b.value - a.value;
-        }).slice(0, 6)),
+        data: stationInfo.sort(function (a, b) {
+          return a.value[2] - b.value[2];
+        }).slice(0, 5),
         symbolSize: function (val) {
-          return val[2] / 1000;
+          return 1500.0 / val[2];
         },
         showEffectOn: 'render',
         rippleEffect: {
@@ -198,11 +179,14 @@ function map(stationInfo, geoCoordMap) {
             show: true
           }
         },
+        tooltip: {
+          formatter: function (params) {
+            return params.name + ": " + params.value[2];
+          }
+        },
         itemStyle: {
           normal: {
-            color: '#FF9033',
-            shadowBlur: 10,
-            shadowColor: '#333'
+            color: '#FF6033'
           }
         },
         zlevel: 1
@@ -215,8 +199,11 @@ function map(stationInfo, geoCoordMap) {
 
   myChart.on('click', function (params) {
     if (params.seriesType === 'effectScatter') {
-      barChart(timeSharCount);
-      pieChart(usertypeCount)
+      barChart(_.range(24).map(function(hour) {
+        var value = _.find(params.data.periods, function(o) { return o[0] == hour }) || [hour, 0];
+        return 60.0 / value[1];
+    }));;
+      pieChart(detailInfoData[params.data.name].userTypeCount)
       $('#detailModal').modal('show')
     }
   });
