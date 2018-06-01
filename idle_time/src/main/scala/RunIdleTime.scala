@@ -10,9 +10,11 @@ object RunIdleTime {
 	val sessions = clean.repartition($"bikeId").sortWithinPartitions($"bikeId", $"startTime")
 	val idle = sessions.mapPartitions(trips => {
 	  trips.sliding(2)
-	    .filter { case a::b::Nil => a.bikeId == b.bikeId && a.endStationId == b.startStationId }
+	    .filter { case a::b::Nil =>
+	      a.bikeId == b.bikeId && a.endStationId == b.startStationId }
 	    .map { case a::b::Nil => (a.endStationId, (b.startTime-a.endTime)/1000) }
-	}).toDF("station", "seconds").createOrReplaceTempView("idle")
+	}).toDF("station", "seconds").cache
+	idle.createOrReplaceTempView("idle")
 
 	/*spark sql """
 select station,
@@ -29,7 +31,26 @@ select station,
 from idle group by station
 """*/
 
-	spark.sql("select station, percentile_approx(seconds,0.03) p3 from idle group by station").show
+	val stationIdle = spark.sql(
+	  "select station, percentile_approx(seconds,0.03) p3 from idle group by station")  // 298
+
+	val stationInfo = data.select(
+	  $"start_station_id" as "id",
+	  $"start_station_name" as "name",
+	  $"start_station_latitude" as "lat",
+	  $"start_station_longitude" as "long").distinct.union(
+	  data.select("end_station_id", "end_station_name",
+	    "end_station_latitude", "end_station_longitude").distinct
+	).distinct.filter("name not like '%Coming Soon'")  // 298
+
+	val result = stationIdle.join(stationInfo, $"station"===$"id")
+	val json = result.map(row =>
+	  (row.getAs[String]("name"), Array(
+	    row.getAs[String]("long").toDouble,
+	    row.getAs[String]("lat").toDouble,
+	    row.getAs[Long]("p3")))
+	).toDF("name", "value")
+	json.coalesce(1).write.json("out")
 
     spark.stop
   }

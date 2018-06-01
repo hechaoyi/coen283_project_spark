@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://api.map.baidu.com/api?v=3.0&ak=ZUONbpqGBsYGXNIYHicvbAbM"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/4.1.0/echarts-en.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/4.1.0/extension/bmap.min.js"></script>
+</head>
+<body>
+    <div id="main"></div>
+    <style>
+html,body,#main { height: 100%; margin: 0; padding: 0; }
+    </style>
+    <script type="text/javascript">
+$.getJSON("stations.json", function(stations) {
+    $.getJSON("mapStyle.json", function(mapStyle) {
+        initialize(stations, mapStyle);
+    })
+});
+
+function initialize(stations, mapStyle) {
+    var option = {
+        title: {
+            text: 'Bay Area Bike Share Data',
+            left: 'center'
+        },
+        tooltip : {
+            trigger: 'item'
+        },
+        bmap: {
+            center: [-122.34, 37.81],
+            zoom: 13,
+            roam: true,
+            mapStyle: mapStyle
+        },
+        series : [
+            {
+                name: 'count',
+                type: 'scatter',
+                coordinateSystem: 'bmap',
+                data: stations,
+                symbolSize: function (val) {
+                    // return Math.pow(3000.0 / val[2], 31/37);
+                    return 2500.0 / val[2];
+                },
+                label: {
+                    normal: {
+                        formatter: '{b}',
+                        position: 'right',
+                        show: false
+                    },
+                    emphasis: {
+                        show: true
+                    }
+                },
+                itemStyle: {
+                    normal: {
+                        color: '#FF9033'
+                    }
+                }
+            },
+            {
+                name: 'Top 5',
+                type: 'effectScatter',
+                coordinateSystem: 'bmap',
+                data: stations.sort(function (a, b) {
+                    return a.value[2] - b.value[2];
+                }).slice(0, 6),
+                symbolSize: function (val) {
+                    // return Math.pow(3000.0 / val[2], 31/37);
+                    return 1500.0 / val[2];
+                },
+                showEffectOn: 'render',
+                rippleEffect: {
+                    brushType: 'stroke'
+                },
+                hoverAnimation: true,
+                label: {
+                    normal: {
+                        formatter: '{b}',
+                        position: 'right',
+                        show: true
+                    }
+                },
+                itemStyle: {
+                    normal: {
+                        color: '#FFC133'
+                    }
+                },
+                zlevel: 1
+            }
+        ]
+    };
+    var chart = echarts.init(document.getElementById('main'));
+    chart.setOption(option);
+    // var bmap = chart.getModel().getComponent('bmap').getBMap();
+    // bmap.addControl(new BMap.MapTypeControl());
+}
+    </script>
+</body>
+</html>
