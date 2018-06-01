@@ -1,14 +1,32 @@
 {
 	"San Francisco Caltrain Station 2  (Townsend St at 4th St)": {
 		"userTypeCount": {
-			"Subscriber": 1462,
-			"Customer": 848
+			"Subscriber": 1874,
+			"Customer": 865
 		}
-    },
-    "San Francisco Caltrain (Townsend St at 4th St)": {
+	},
+	"San Francisco Caltrain (Townsend St at 4th St)": {
 		"userTypeCount": {
 			"Subscriber": 1462,
 			"Customer": 848
 		}
-    } 
+	},
+	"Howard St at Beale St": {
+		"userTypeCount": {
+			"Subscriber": 2088,
+			"Customer": 176
+		}
+	},
+	"San Francisco Ferry Building (Harry Bridges Plaza)": {
+		"userTypeCount": {
+			"Subscriber": 1973,
+			"Customer": 292
+		}
+	},
+	"The Embarcadero at Sansome St": {
+		"userTypeCount": {
+			"Subscriber": 1472,
+			"Customer": 133
+		}
+	}
 }
