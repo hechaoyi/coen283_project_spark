@@ -1,7 +1,9 @@
 object RunIdleTime {
   def main(args: Array[String]) {
+    val master = if (args.length > 0) args(0) else "local[*]"
+    // val master = "spark://hechy-macbook:7077"
     val spark = org.apache.spark.sql.SparkSession.builder
-      .master("local[*]").appName("Idle Time").getOrCreate
+      .master(master).appName("Idle Time").getOrCreate
     import spark.implicits._
     val data = spark.read.option("header", "true").csv("data")
 
