@@ -101,7 +101,7 @@ function initialize(stations, mapStyle) {
     chart.setOption(option);
     chart.on('click', function (params) {
         barChart(_.range(24).map(function(hour) {
-            var value = _.find(params.data.periods, function(o) { return o[0] == hour }) || [hour, 0];
+            var value = _.find(params.data.periods, function(o) { return o[0] == hour }) || [hour, 999999];
             return 60.0 / value[1];
         }));
         $('#detailModal').modal('show');
@@ -125,7 +125,7 @@ function barChart(data) {
         },
         yAxis: {
             type: 'value',
-            axisLabel: { show: true }
+            axisLabel: { show: false }
         },
         series: [{
             data: data,

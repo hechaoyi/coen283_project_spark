@@ -17,7 +17,7 @@ function barChart(data) {
         yAxis: {
             type: 'value',
             axisLabel: {
-                show: true
+                show: false
             }
         },
         series: [{
